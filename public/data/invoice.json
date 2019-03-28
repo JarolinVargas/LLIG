@@ -1,0 +1,29 @@
+{
+  "clientDetails": {
+    "client": "Microsoft Corporation",
+    "logo": "microsoft-logo.png",
+    "address": "1600 Amphitheatre Pkwy, Mountain View, CA 94043",
+    "invoice": "1234567890",
+    "dateIssued": "July 24, 2019"
+  },
+  "items": [
+    {
+      "name": "Laptop",
+      "price": 1200,
+      "quantity": 2,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "Apples",
+      "price": 236,
+      "quantity": 11,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "Tablet",
+      "price": 200,
+      "quantity": 7,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  ]
+}

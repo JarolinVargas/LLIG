@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Invoice App</title>
+    <meta name="author" content="Jarolin Vargas"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="styles/index.css">
+    <link rel="stylesheet" type="text/css" href="styles/invoice.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css" integrity="sha384-QokYePQSOwpBDuhlHOsX0ymF6R/vLk/UQVz3WHa6wygxI5oGTmDTv8wahFOSspdm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="general-aligner">
+      <!-- header -->
+      <header>
+        <div class="header-col-1">
+          <img id="header-logo" src="img/leaflink.png" alt="Leaf Link"/>
+        </div>
+        <div class="header-col-2">
+          <i id="toggle-mobile-nav" class="fa fa-bars" style="display:none"></i>
+          <nav>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">My Account</a></li>
+              <li><a href="#">Dashboard</a></li>
+              <li><a href="#">Help</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      <!-- title heading -->
+      <div class="text-heading">
+        <h1>LeafLink Client Invoice</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.</p>
+      </div>
+      <!-- invoice -->
+      <main id="invoice" class="main-content-container">
+        <!-- invoice heading -->
+        <div id="invoice-heading" class="aligner columns-2">
+          <div class="aligner-col col-1">
+            <img id="heading-client-logo" src="#" alt="client logo"/>
+            <ul class="ul-list-item-borders">
+              <li id="client-name"><!-- client name --></li>
+              <li><address id="client-address"><!-- address --></address></li>
+              <li><strong>Invoice #:</strong>&nbsp;<span id="client-invoice-num"><!-- invoice number --></span></li>
+              <li><strong>Date Issued:</strong>&nbsp;<span id="date-issued"><!-- date --></span></li>
+            </ul>
+          </div>
+          <div class="aligner-col col-2"></div>
+        </div>
+        <!-- invoice total and items -->
+        <div class="aligner columns-2 margin-top-50">
+          <div class="aligner-col col-1">
+            <div class="invoice-items">
+              <h2 class="heading-xl">Items: <strong id="items-count"><!-- items count --></strong></h2>
+              <ul>
+                <!-- list items are inserted in invoice-generator.js -->
+                <li>
+                  <div class="item-label">
+                    <span class="item-name"><!-- item name --></span>
+                    <span class="item-price"><!-- item price --></span>
+                  </div>
+                  <div class="item-content">
+                    <div class="item-details">
+                      <h5>QUANTITY</h5>
+                      <div class="quantity-control-btn">
+                        <i class="fa fa-plus-circle"></i>
+                        <span class="item-quantity">3</span>
+                        <i class="fa fa-minus-circle"></i>
+                      </div>
+                    </div>
+                    <div class="item-details">
+                      <h5>DESCRIPTION</h5>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                  </div>
+                </li>
+                <!-- list items are inserted in invoice-generator.js -->
+              </ul>
+              <div class="items-action-btns">
+                <span id="remove-items" class="custom-btn-style color-orange"><i class="fa fa-times"></i>Remove Items</span>
+                <span id="add-items" class="custom-btn-style color-blue" style="margin-left: 10px;"><i class="fa fa-plus"></i>Add Items</span>
+              </div>
+            </div>
+          </div>
+          <div class="aligner-col col-2">
+            <!-- total -->
+            <div class="invoice-total">
+              <h2 class="heading-xl">Total: <strong id="total-price"><!-- price --></strong></h2>
+              <h4 class="invoice-total-extra">Taxes: <strong id="total-taxes"><!-- taxes --></strong></h4>
+              <h4 class="invoice-total-extra">Discount: <strong id="total-discount"><!-- discount --></strong></h4>
+            </div>
+            <!-- Footer -->
+            <footer id="invoice-footer">
+              <a href="#">Terms & Conditions</a>
+              <a href="#">Privacy Policy</a>
+              <a href="#">Security</a>
+            </footer>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="text/javascript" src="js/invoice-generator.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+  </body>
+</html>
