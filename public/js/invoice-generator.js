@@ -1,184 +1,209 @@
 class InvoiceGenerator {
     constructor(invoiceEl) {
-        this.clientName = invoiceEl.querySelector('#client-name');
-        this.clientAddress = invoiceEl.querySelector('#client-address');
-        this.clientInvoiceNum = invoiceEl.querySelector('#client-invoice-num');
-        this.dateIssued = invoiceEl.querySelector('#date-issued');
-        this.clientLogo = invoiceEl.querySelector('#heading-client-logo');
-        this.itemsCount = invoiceEl.querySelector('#items-count');
+        this.clientLogoEl = invoiceEl.querySelector('#heading-client-logo');
+        this.importFileBtn = invoiceEl.querySelector('.import-file-btn');
+        this.itemsListEl = invoiceEl.querySelector('.invoice-items > ul');
+        this.itemsCountEl = invoiceEl.querySelector('#items-count');
+        this.totalPriceEl = invoiceEl.querySelector('#total-price');
+        this.totalTaxesEl = invoiceEl.querySelector('#total-taxes');
+        this.discountEl = invoiceEl.querySelector('#total-discount');
         this.addItemsBtn = invoiceEl.querySelector('#add-items');
         this.removeItemsBtn = invoiceEl.querySelector('#remove-items');
-        this.invoiceItemsUL = invoiceEl.querySelector('.invoice-items > ul');
-        this.totalPrice = invoiceEl.querySelector('#total-price');
-        this.totalTaxes = invoiceEl.querySelector('#total-taxes');
-        this.totalDiscount = invoiceEl.querySelector('#total-discount');
-
-        this.itemsArr; // Store items as array
-        this.removeItems = false;
-        this.taxPercentage = 4; // Tax percentage of total price
-
         // Event listeners
+        invoiceEl.querySelector('#import-client-logo').addEventListener('change', this.importFileInputChange);
         this.addItemsBtn.addEventListener('click', this.addItem);
-        this.removeItemsBtn.addEventListener('click', this.removeItem);
-        this.invoiceItemsUL.addEventListener('click', this.updateItemQuantity);
-
-        this.getInvoiceJSON();
-    }
-
-    // Request invoice JSON file
-    getInvoiceJSON = () => {
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = 'json';
-        xhr.open('GET', '../data/invoice.json');
-        xhr.onload = () => {
-            if( xhr.readyState === 4 && xhr.status === 200 ) {
-              this.useInvoiceJSON(xhr.response);
-            } else {
-                alert('Failed to load invoice.json');
-            }
-        };
-        xhr.send();
-    }
-
-    useInvoiceJSON = (json) => {
-        this.itemsArr = json.items;
-        this.setClientDetails(json.clientDetails);
-        this.updateClientItems(json.items);
-    }
-
-    // Set client details in heading
-    setClientDetails = (details) => {
-        this.clientName.textContent = details.client;
-        this.clientAddress.textContent = details.address;
-        this.clientInvoiceNum.textContent = details.invoice;
-        this.dateIssued.textContent = details.dateIssued;
-        this.clientLogo.setAttribute('src', `data/${details.logo}`);
-    }
-
-    // Update client items
-    updateClientItems = () => {
-        const items = this.itemsArr;
-        let itemsHTML = ``;
-        // Loop through each item and generate HTML with items
-        for( let i = 0; i < items.length; i++ ) {
-            const itm = items[i];
-            const itmTotal = itm.price * itm.quantity; // Total price plus quantity
-            itemsHTML += `
-            <li data-item-index="${i}">
+        this.removeItemsBtn.addEventListener('click', this.toggleRemoveItems);
+        this.discountEl.addEventListener('input', this.updateTotal);
+        // States
+        this.removeItemsOn = false;
+        this.itemsArr = [];
+        this.taxPercentage = 4;
+        // List item HTML
+        this.itemEditablesInitText = ['item name', 'item price', 'item description...']; // Initial text displayed in items editables
+        this.listItemStr = `
+            <li>
                 <div class="item-label">
-                    <span class="item-name">${itm.name} - <strong>$${itm.price}</strong></span>
-                    <span class="item-price">$${itmTotal}</span>
+                <span class="item-name" contenteditable="true">${this.itemEditablesInitText[0]}</span>
+                <span class="item-price currency-pseudo" contenteditable="true">${this.itemEditablesInitText[1]}</span>
                 </div>
                 <div class="item-content">
-                    <div class="item-details">
+                <div class="item-details">
+                    <div class="aligner columns-2 aligner-lrmargins-off aligner-responsive-off">
+                    <div class="aligner-col col-1">
                         <h5>QUANTITY</h5>
                         <div class="quantity-control-btn">
-                        <i class="fa fa-plus-circle" data-item-index="${i}"></i>
-                        <span class="item-quantity">${itm.quantity}</span>
-                        <i class="fa fa-minus-circle" data-item-index="${i}"></i>
+                        <i class="quantity-add fa fa-plus-circle"></i>
+                        <span class="item-quantity">1</span>
+                        <i class="quantity-sub fa fa-minus-circle"></i>
                         </div>
                     </div>
-                    <div class="item-details">
-                        <h5>DESCRIPTION</h5>
-                        <p>${itm.description}</p>
+                    <div class="aligner-col col-2">
+                        <h5>TOTAL</h5>
+                        <span class="item-price-total">$0.00</span>                      
+                    </div>                     
                     </div>
                 </div>
+                <div class="item-details">
+                    <h5>DESCRIPTION</h5>
+                    <p contenteditable="true">${this.itemEditablesInitText[2]}</p>
+                </div>
+                </div>
             </li>`;
-        }
-        // Insert items HTML blocks to items list
-        this.invoiceItemsUL.innerHTML = itemsHTML;
-        this.itemsCount.textContent = items.length;
-        this.updateTotal(items);
     }
 
-    // Add item (not actually useful)
+
+    // IMPORT CLIENT LOGO IMAGE
+    importFileInputChange = () => {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        reader.onloadend = () => {
+            this.clientLogoEl.src = event.target.result;
+            this.clientLogoEl.style.display = 'block';
+            this.importFileBtn.style.display = 'none';
+        }
+        if( file && file.type.match('image.*') ) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+
+    // TOTAL
+    updateTotal = () => {
+        let itemsSum = 0;
+        let discount = this.discountEl.value;
+        const itemsTotal = this.itemsArr.map(item => {
+            return item.price * item.quantity;
+        });
+        // Add totals of each item
+        for( let i = 0; i < itemsTotal.length; i++ ) {
+            itemsSum += itemsTotal[i];
+        }
+        itemsSum = itemsSum - discount; // Subtract discount from sum
+        this.totalPriceEl.textContent = `$${itemsSum.toFixed(2)}`; // Update total
+        this.totalTaxesEl.textContent = `$${(itemsSum / 100 * this.taxPercentage).toFixed(2)}`; // Update tax
+    }
+
+
+    // ITEMS FUNCTIONALITY
+    // Add item
     addItem = () => {
-        this.itemsArr.push(this.itemsArr[0]);
-        this.updateClientItems();
+        const itemId = new Date().getTime(); // Create unique id used to identify item in itemsArr
+        const listItemHTML = new DOMParser().parseFromString(this.listItemStr, 'text/html').querySelector('li'); // Parse list item HTML string as DOM and get li in the body
+        const listItemMod = this.prepareItemHTML(listItemHTML, itemId);
+        this.itemsListEl.appendChild(listItemMod);
+        // Add item info to itemsArr state
+        this.itemsArr.push({
+            id: itemId,
+            quantity: 1,
+            name: null,
+            price: null,
+            description: null
+        });
+        this.itemsCount();
         window.scrollTo(0, document.body.scrollHeight); // Scroll to bottom
-        if( this.removeItems ) {
-            this.removeItem(); // Disable remove item
-        }
+        if( this.removeItemsOn ) this.toggleRemoveItems(); // If remove items is enabled, disable
     }
 
-    // Toggle remove item
-    removeItem = () => {
-        this.removeItems = this.removeItems === false ? true : false;
-        const itemsEl = document.querySelectorAll('.invoice-items > ul > li[data-item-index]');
-        if( this.removeItems === true ) {
-            alert('Double click the red items you want to remove.');
-            // Add events listeners to items
-            for( let i = 0; i < itemsEl.length; i++ ) {
-                itemsEl[i].addEventListener('dblclick', this.removeThisItem);
+    // Count and update number of items
+    itemsCount = () => {
+        this.itemsCountEl.textContent = this.itemsArr.length;
+    }
+
+    // Prepare item before adding it to the list
+    prepareItemHTML = (itemHTML, itemId) => {
+        itemHTML.setAttribute('data-item-id', itemId);
+        // Contenteditable focus event
+        const editables = itemHTML.querySelectorAll('[contenteditable="true"]');
+        for( let i = 0; i < editables.length; i++ ) {
+            editables[i].addEventListener('focus', () => {
+                if( editables[i].textContent === this.itemEditablesInitText[i] ) { // Compare initial text with current text on focus, and clear text if it matches,
+                    editables[i].textContent = '';
+                }
+            });
+            editables[i].addEventListener('focusout', () => {
+                if( editables[i].textContent === '' ) { // If text content is empty after focusout, add initial text
+                    editables[i].textContent = this.itemEditablesInitText[i];
+                    editables[i].classList.remove('editable-icon-off');
+                } else {
+                    editables[i].classList.add('editable-icon-off'); // When text is edited/does not match initial text, add class that removes the font icon
+                }
+            });
+        }
+        // Quantity buttons event
+        itemHTML.querySelector('.quantity-control-btn').addEventListener('click', () => {
+            const clickedEl = event.srcElement;
+            const [clickedAdd, clickedSub] = [clickedEl.classList.contains('quantity-add'), clickedEl.classList.contains('quantity-sub')];
+            if( !clickedAdd && !clickedSub ) {
+                return false; // Return false if neither add or sub buttons were clicked
+            } else {
+                const thisItemId = clickedEl.closest('[data-item-id]').getAttribute('data-item-id');
+                const itemInItemsArr = this.itemsArr.find(x => x.id == thisItemId); // Find item in itemsArr with matching 'thisItemId' id
+                let quantity = itemInItemsArr.quantity;
+                if( clickedAdd ) {
+                    quantity++;
+                } else if( clickedSub && quantity >= 2 ) {
+                    quantity--;
+                }
+                this.updateItemQuantity(quantity, thisItemId);
             }
-            // Add class to list
+        });
+        // Item price
+        itemHTML.querySelector('.item-price').addEventListener('keydown', (event) => {
+            // Prevent input if point key is clicked, and there already is a point
+            // Prevent input if key pressed is not a number, point, left & right arrows, or backspace
+            const kc = event.keyCode;
+            if( event.keyCode === 190 && event.target.textContent.includes('.') ) {
+                event.preventDefault();
+            } else if( !isFinite(event.key) && kc !== 190 && kc !== 8 && kc !== 37 && kc !== 39 ) {
+                event.preventDefault();
+            }
+        });
+        itemHTML.querySelector('.item-price').addEventListener('input', () => {
+            const thisPrice = event.target.textContent;
+            this.itemsArr.find(x => x.id == itemId).price = thisPrice; // Update item price in state
+            this.updateItemTotal(itemId);
+        })
+        // Double click event
+        itemHTML.addEventListener('click', () => {
+            if( this.removeItemsOn ) {
+                this.removeItem(itemId);
+            }
+        });
+        return itemHTML;
+    }
+
+    // Update item quantity in DOM and itemsArr state
+    updateItemQuantity = (quantity, itemId) => {
+        this.itemsArr.find(x => x.id == itemId).quantity = quantity; // Update quantity in state
+        this.itemsListEl.querySelector(`li[data-item-id="${itemId}"] .item-quantity`).textContent = quantity;
+        this.updateItemTotal(itemId);
+    }
+
+    // Update item total
+    updateItemTotal = (itemId) => {
+        const itemInItemsArr = this.itemsArr.find(x => x.id == itemId);
+        const total = itemInItemsArr.price * itemInItemsArr.quantity;
+        this.itemsListEl.querySelector(`li[data-item-id="${itemId}"] .item-price-total`).textContent = `$${total.toFixed(2)}`;
+        this.updateTotal();
+    }
+
+    // Remove item in DOM and itemsArr state
+    removeItem = (itemId) => {
+        const itemIndex = this.itemsArr.indexOf( this.itemsArr.find(x => x.id == itemId) ); // Get index of item to remove
+        itemIndex !== -1 ? this.itemsArr.splice(itemIndex, 1) : null; // Remove from state
+        this.itemsListEl.querySelector(`li[data-item-id="${itemId}"]`).remove(); // Remove from DOM
+        this.itemsCount();
+        this.updateTotal();
+    }
+
+    // Toggle remove items
+    toggleRemoveItems = () => {
+        !this.removeItemsOn ? this.removeItemsOn = true : this.removeItemsOn = false; // Toggle removeItemsOn depending on its current state
+        if( this.removeItemsOn ) {
             invoiceEl.classList.add('removing-items');
         } else {
-            for( let i = 0; i < itemsEl.length; i++ ) {
-                itemsEl[i].removeEventListener('dblclick', this.removeThisItem);
-            }
             invoiceEl.classList.remove('removing-items');
-            //this.updateClientItems();
         }
-    }
-
-    // Remove specific items
-    removeThisItem = (event) => {
-        const itemsEl = document.querySelectorAll('.invoice-items > ul > li[data-item-index]');
-        if( itemsEl.length > 1 ) {
-            const itemIndex = Number(event.currentTarget.getAttribute('data-item-index'));
-            this.itemsArr.splice(itemIndex, 1);
-            event.currentTarget.remove();
-            this.updateTotal(this.itemsArr);
-            this.itemsCount.textContent = this.itemsArr.length;
-        } else {
-            alert('Cannot remove the last item.');
-        }
-    }
-
-    // Update item quantity
-    updateItemQuantity = (event) => {
-        const clickedElement = event.srcElement;
-        if( !clickedElement.hasAttribute('data-item-index') ) {
-            return false;
-        }
-        const itemIndex = Number(clickedElement.getAttribute('data-item-index')); // Get item in itemsArr by index
-        const thisItemEl = this.invoiceItemsUL.querySelector(`li[data-item-index="${itemIndex}"]`);
-        const thisItemElQuantity = thisItemEl.querySelector('.item-quantity');
-        const thisItemElTotal = thisItemEl.querySelector('.item-price');
-        const thisItemPrice = Number(thisItemEl.querySelector('.item-name strong').textContent.replace(/\D/g, '')); // Get item price and convert to number
-        if( clickedElement.classList.contains('fa-plus-circle') ) {
-            this.itemsArr[itemIndex].quantity++; // Update quantity in itemsArr
-            thisItemElQuantity.textContent = Number(thisItemElQuantity.textContent) + 1;
-            thisItemElTotal.textContent = `$${Number(thisItemElTotal.textContent.replace(/\D/g, '')) + thisItemPrice}`;
-            this.updateTotal(this.itemsArr);
-        } else if( clickedElement.classList.contains('fa-minus-circle') && this.itemsArr[itemIndex].quantity > 1 ) {
-            this.itemsArr[itemIndex].quantity--; // Update quantity in itemsArr
-            thisItemElQuantity.textContent = Number(thisItemElQuantity.textContent) - 1;
-            thisItemElTotal.textContent = `$${Number(thisItemElTotal.textContent.replace(/\D/g, '')) - thisItemPrice}`;
-            this.updateTotal(this.itemsArr);
-        } else {
-            return false;
-        }
-    }
-
-    /*  
-        Update total
-        Add all items prices including quantity
-        Taxes is based on total
-    */
-    updateTotal = (items) => {
-        let [total, taxes, discount] = [0, 0, 0];
-        // total
-        for( let i = 0; i < items.length; i++ ) {
-            total += (items[i].price * items[i].quantity);
-        }
-        // taxes is 2% of total
-        taxes = (total / 100 * this.taxPercentage);
-        // discount
-        this.totalPrice.textContent = `$${total}`;
-        this.totalTaxes.textContent = `$${taxes}`;
-        this.totalDiscount.textContent = `$${discount}`;
     }
 }
 

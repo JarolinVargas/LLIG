@@ -1,100 +1,106 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Invoice App</title>
+    <title>LeafLink Invoice App</title>
     <meta name="author" content="Jarolin Vargas"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="styles/index.css">
-    <link rel="stylesheet" type="text/css" href="styles/invoice.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/invoice.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css" integrity="sha384-QokYePQSOwpBDuhlHOsX0ymF6R/vLk/UQVz3WHa6wygxI5oGTmDTv8wahFOSspdm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
   </head>
   <body>
-    <div class="general-aligner">
-      <!-- header -->
-      <header>
+    <!-- HEADER -->
+    <header>
+      <div class="general-aligner">
         <div class="header-col-1">
-          <img id="header-logo" src="img/leaflink.png" alt="Leaf Link"/>
+          <a href="#"><img id="header-logo" src="img/leaflink.png" alt="Leaf Link"/></a>
         </div>
         <div class="header-col-2">
-          <i id="toggle-mobile-nav" class="fa fa-bars" style="display:none"></i>
           <nav>
             <ul>
-              <li><a href="#">Home</a></li>
-              <li><a href="#">My Account</a></li>
+              <li><a href="#">Generate Invoice</a></li>
               <li><a href="#">Dashboard</a></li>
-              <li><a href="#">Help</a></li>
+              <li><a href="#">My Account</a></li>
             </ul>
           </nav>
+          <i id="toggle-mobile-nav" class="fa fa-bars" style="display:none"></i>
         </div>
-      </header>
-      <!-- title heading -->
+      </div>
+    </header>
+
+    <div class="general-aligner">
+      <!-- TITLE HEADING -->
       <div class="text-heading">
-        <h1>LeafLink Client Invoice</h1>
+        <h1>Generate Client Invoice</h1>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet.</p>
       </div>
-      <!-- invoice -->
+
+      <!-- INVOICE -->
       <main id="invoice" class="main-content-container">
-        <!-- invoice heading -->
-        <div id="invoice-heading" class="aligner columns-2">
+        <!-- client details -->
+        <div id="invoice-heading" class="aligner columns-2 aligner-bottom-border">
           <div class="aligner-col col-1">
-            <img id="heading-client-logo" src="#" alt="client logo"/>
-            <ul class="ul-list-item-borders">
-              <li id="client-name"><!-- client name --></li>
-              <li><address id="client-address"><!-- address --></address></li>
-              <li><strong>Invoice #:</strong>&nbsp;<span id="client-invoice-num"><!-- invoice number --></span></li>
-              <li><strong>Date Issued:</strong>&nbsp;<span id="date-issued"><!-- date --></span></li>
+            <label for="import-client-logo"><img id="heading-client-logo" src="#" alt="client logo" style="display:none"/></label> <!-- wrapping client logo image in label to trigger file input when image is clicked -->
+            <label class="import-file-btn">
+              <i class="fa fa-image"></i><span>import client logo</span>
+              <input type="file" id="import-client-logo" accept="image/*" />
+            </label>
+            <ul class="client-details">
+              <li id="client-name">
+                <div class="custom-text-input">
+                  <input type="text" placeholder="client name"/><i class="fa fa-user"></i>
+                </div>
+              </li>
+              <li>
+                <div class="custom-text-input">
+                  <input type="text" placeholder="client address"/><i class="fa fa-map-marker"></i>
+                </div>
+              </li>
+              <li>
+                <div class="custom-text-input">
+                  <input type="text" placeholder="invoice number"/><i class="fa fa-hashtag"></i>
+                </div>
+              </li>
+              <li>
+                <div class="custom-text-input">
+                  <input type="date"/><i class="fa fa-calendar"></i>
+                </div>
+              </li>
             </ul>
           </div>
           <div class="aligner-col col-2"></div>
         </div>
-        <!-- invoice total and items -->
-        <div class="aligner columns-2 margin-top-50">
+        <!-- client items and total -->
+        <div class="aligner columns-2">
           <div class="aligner-col col-1">
+            <!-- items -->
             <div class="invoice-items">
-              <h2 class="heading-xl">Items: <strong id="items-count"><!-- items count --></strong></h2>
-              <ul>
-                <!-- list items are inserted in invoice-generator.js -->
-                <li>
-                  <div class="item-label">
-                    <span class="item-name"><!-- item name --></span>
-                    <span class="item-price"><!-- item price --></span>
-                  </div>
-                  <div class="item-content">
-                    <div class="item-details">
-                      <h5>QUANTITY</h5>
-                      <div class="quantity-control-btn">
-                        <i class="fa fa-plus-circle"></i>
-                        <span class="item-quantity">3</span>
-                        <i class="fa fa-minus-circle"></i>
-                      </div>
-                    </div>
-                    <div class="item-details">
-                      <h5>DESCRIPTION</h5>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    </div>
-                  </div>
-                </li>
-                <!-- list items are inserted in invoice-generator.js -->
-              </ul>
+              <h2 class="counter-headings">Items: <strong id="items-count">0</strong></h2>
+              <ul></ul>
               <div class="items-action-btns">
                 <span id="remove-items" class="custom-btn-style color-orange"><i class="fa fa-times"></i>Remove Items</span>
-                <span id="add-items" class="custom-btn-style color-blue" style="margin-left: 10px;"><i class="fa fa-plus"></i>Add Items</span>
+                <span id="add-items" class="custom-btn-style color-blue" style="margin-left: 10px;"><i class="fa fa-plus"></i>Add Item</span>
               </div>
             </div>
           </div>
           <div class="aligner-col col-2">
             <!-- total -->
             <div class="invoice-total">
-              <h2 class="heading-xl">Total: <strong id="total-price"><!-- price --></strong></h2>
-              <h4 class="invoice-total-extra">Taxes: <strong id="total-taxes"><!-- taxes --></strong></h4>
-              <h4 class="invoice-total-extra">Discount: <strong id="total-discount"><!-- discount --></strong></h4>
+              <h2 class="counter-headings">Total: <strong id="total-price">$0.00</strong></h2>
+              <h4 class="invoice-total-extra">Taxes: <strong id="total-taxes">$0.00</strong></h4>
+              <h4 class="invoice-total-extra">Discount: <span class="custom-text-input cti-small" style="width:200px"><input type="number" id="total-discount" value="0"/><i class="fa fa-dollar-sign"></i></span></h4>
             </div>
-            <!-- Footer -->
+            <!-- invoice footer -->
             <footer id="invoice-footer">
+              <!-- note to client -->
+              <div class="custom-text-input" style="margin-bottom: 30px;">
+                <label>Note to client</label>
+                <textarea id="note-to-client" placeholder="(500 characters max)" maxlength="500"></textarea><i class="fa fa-comment" style="top:43px"></i>
+              </div>
               <a href="#">Terms & Conditions</a>
               <a href="#">Privacy Policy</a>
               <a href="#">Security</a>
@@ -102,6 +108,12 @@
           </div>
         </div>
       </main>
+
+      <!-- ACTION BUTTONS -->
+      <div id="invoice-actions-btns">
+        <span class="custom-button-large"><i class="fa fa-save"></i>Save Invoice</span>
+        <span class="custom-button-large" onClick="window.print()"><i class="fa fa-print"></i>Print Invoice</span>
+      </div>
     </div>
     <script type="text/javascript" src="js/invoice-generator.js"></script>
     <script type="text/javascript" src="js/index.js"></script>

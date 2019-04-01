@@ -1,0 +1,193 @@
+/* index.css: Contains general website styles that are not directly related to the invoice and its contents */
+
+:root {
+    --header-height: 70px;
+    --font-family-1: 'Poppins', sans-serif;
+    --blue-dream: #0072F0;;
+    --grandaddy-purple: #1B1443;
+    --la-confidential: #0022AC;
+    --nyc-diesel: #01bbb4;
+    --fontsize-headline: 2.667rem;
+}
+
+html {
+    font-size: 18px;
+}
+
+body {
+    color: #4d4d4d;
+    font-family: 'Noto Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-width: 320px;
+    background-color: #F5F6FA;
+    background-image: url('../img/ll-hero-home-desktop@2x.png');
+    background-attachment: fixed;
+    background-position: 50% 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--nyc-diesel);
+}
+
+address {
+    text-decoration: none;
+    font-style: normal;
+}
+
+textarea {
+    resize: vertical;
+}
+
+
+/* GENERAL ALIGNER: controls overall website content width */
+.general-aligner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 50px;
+    box-sizing: border-box;
+}
+
+
+/* HEADER: Header height is stored in (--header-height) variable and also used in '.text-heading'
+element to automatically add extra top padding height equel to header height. */
+header {
+    width: 100%;
+    color: #FFF;
+    position: fixed;
+    z-index: 11;
+    height: var(--header-height);
+    background-color: var(--grandaddy-purple);
+}
+
+header > .general-aligner {
+    display: flex;
+    height: inherit;
+    align-items: center;
+}
+
+header .header-col-2 {
+    width: 100%;
+    text-align: right;
+    position: relative;
+}
+
+header nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header nav li {
+    display: inline-block;
+    margin-left: 20px;
+    font-weight: 500;
+}
+
+header nav li:first-child {
+    margin-left: 0;
+}
+
+#header-logo {
+    width: 200px;
+}
+
+/* mobile nav */
+#toggle-mobile-nav {
+    font-size: 2em;
+    cursor: pointer;
+    color: var(--blue-dream);
+}
+
+#toggle-mobile-nav:hover {
+    color: var(--nyc-diesel);
+}
+
+body.mobile-nav-visible header nav {
+    display: block !important;
+}
+
+body.mobile-nav-visible #toggle-mobile-nav {
+    color: #FFF;
+}
+
+
+/* HEADING */
+.text-heading {
+    text-align: center;
+    padding-top: calc(75px + var(--header-height)); /* add additional top padding taken from (--header-height) to automatically maintain the right distance from the header */
+    padding-bottom: 75px;
+}
+
+.text-heading h1 {
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+    font-family: var(--font-family-1);
+    font-size: var(--fontsize-headline);
+    color: var(--grandaddy-purple);
+}
+
+.text-heading p {
+    font-size: 1.15em;
+    line-height: 1.8;
+    margin-bottom: 0;
+}
+
+
+/* MEDIA QUERIES */
+@media screen and (max-width: 800px) {
+    body {
+        font-size: 16px;
+    }
+
+    .text-heading h1 {
+        font-size: 32px;
+    }
+}
+
+@media screen and (max-width: 660px) {
+    .general-aligner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media screen and (max-width: 620px) {
+    header nav {
+        background-color: #FFF;
+        padding: 20px;
+        width: 130px;
+        position: absolute;
+        right: 0px;
+        top: calc(var(--header-height) - 30px);
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        display: none;
+        z-index: 10;
+    }
+
+    header nav li {
+        display: block;
+        margin: 0;
+    }
+
+    header nav a {
+        padding: 5px 0px;
+        display: block;
+        color: initial;
+    }
+
+    #toggle-mobile-nav {
+        display: block !important;
+    }
+}
